@@ -77,10 +77,15 @@ def frame_to_ascii(frame, width=100):
     
     return ascii_img
 
-def process_video(video_path, output_path, width=100):
+def process_video(video_path, output_path=None, width=100):
     """
     動画を読み込んでASCIIアートに変換し、ファイルに保存する関数
     """
+    if output_path is None:
+        # 入力動画名から出力ファイル名を生成
+        video_name = video_path.split('/')[-1].split('.')[0]
+        output_path = f'../output/{video_name}_frames.txt'
+
     # 動画ファイルを開く
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
@@ -131,7 +136,7 @@ def main():
     parser = argparse.ArgumentParser(description='動画をASCIIアートに変換する')
     parser.add_argument('input', help='入力動画のパス')
     parser.add_argument('--width', type=int, default=100, help='ASCII アートの幅')
-    parser.add_argument('--output', default='../output/frames.txt', help='出力ファイルパス')
+    parser.add_argument('--output', help='出力ファイルパス（省略時は入力動画名に基づく）')
     
     # 引数を解析
     args = parser.parse_args()

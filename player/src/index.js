@@ -105,11 +105,15 @@ class ASCIIPlayer {
         }
 
         this.isPlaying = true;
-        this.startTime = Date.now();  // 再生開始時刻を記録
         
+        // 2秒70ミリ秒の遅延を追加
+        await new Promise(resolve => setTimeout(resolve, 2070));
+
+        this.startTime = Date.now();  // 再生開始時刻を記録
+
         // 音声再生開始
         this.startAudio();
-
+        
         // フレーム表示ループ（30fpsで更新）
         const updateInterval = setInterval(() => {
             if (!this.isPlaying) {
@@ -120,8 +124,8 @@ class ASCIIPlayer {
                 return;
             }
 
-            // 現在の再生時間を計算
-            const currentTime = Date.now() - this.startTime;
+            // 現在の再生時間を計算（フレーム表示を2秒70ミリ秒遅らせる）
+            const currentTime = Date.now() - this.startTime - 750;
             // 現在表示すべきフレームを探す
             const currentFrame = this.frames.find(frame => 
                 currentTime >= frame.startTime && currentTime < frame.endTime
@@ -158,13 +162,14 @@ class ASCIIPlayer {
 // メイン関数
 async function main() {
     // コマンドライン引数のチェック
-    if (process.argv.length < 4) {
-        console.error('Usage: node index.js <ascii-file> <video-file>');
+    if (process.argv.length < 3) {
+        console.error('Usage: node index.js <video-file>');
         process.exit(1);
     }
 
-    const asciiPath = process.argv[2];  // ASCIIアートファイルのパス
-    const videoPath = process.argv[3];  // 動画ファイルのパス
+    const videoPath = process.argv[2];  // 動画ファイルのパス
+    const videoName = videoPath.split('/').pop().split('.')[0];
+    const asciiPath = `../output/${videoName}_frames.txt`;  // 動画名に基づくASCIIアートファイルのパス
 
     // ファイルの存在確認
     try {
